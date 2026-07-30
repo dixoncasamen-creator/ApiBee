@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ApiBee, centro de apiterapia y productos naturales derivados de las abejas.">
+    <title>ApiBee | Salud Natural</title>
+    <link rel="stylesheet" href="./estilos.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<header id="header">
+    <a class="logo" href="#inicio" aria-label="Ir al inicio">
+        <span>🐝 ApiBee</span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
+    <nav id="nav">
+        <ul>
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#beneficios">Beneficios</a></li>
+            <li><a href="#productos">Productos</a></li>
+            <li><a href="#tratamientos">Tratamientos</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+            <li><a href="#factory">Honey Factory</a></li>
+        </ul>
+    </nav>
+</header>
+
+<section class="hero" id="inicio">
+    <div class="hero-contenido">
+        <span class="etiqueta">Bienestar natural</span>
+        <h1>Descubre el poder de la <span>Apiterapia</span></h1>
+        <p>Conoce los beneficios de la miel, el propóleo, la jalea real, el polen y otros productos de la colmena.</p>
+        <div class="hero-botones">
+            <a href="https://wa.me/593963913139?text=Hola%20ApiBee%2C%20quiero%20reservar%20una%20consulta." class="btn" target="_blank" rel="noopener noreferrer">Reservar por WhatsApp</a>
+            <a href="#beneficios" class="btn2">Conocer más</a>
+        </div>
+    </div>
+</section>
+
+<main>
+    <section class="acerca">
+        <div class="imagen">
+            <img src="./apiterapia.jpg" alt="Sesión de apiterapia">
+        </div>
+        <div class="texto">
+            <span class="mini-titulo">Sobre nosotros</span>
+            <h2 id="mensaje">¿Qué es la Apiterapia?</h2>
+            <p>La apiterapia es una práctica complementaria que emplea productos elaborados por las abejas. Entre los más conocidos se encuentran la miel, el propóleo, la jalea real, el polen y la apitoxina.</p>
+            <p>En ApiBee promovemos su uso responsable como complemento del bienestar y nunca como reemplazo de la atención médica profesional.</p>
+            <button type="button" onclick="actualizarMensaje()">Más información</button>
+        </div>
+    </section>
+
+    <section id="beneficios">
+        <div class="titulo">
+            <span class="mini-titulo">Lo mejor de la colmena</span>
+            <h2>Beneficios de la Apiterapia</h2>
+            <p>Productos naturales con distintas propiedades y usos tradicionales.</p>
+        </div>
+        <div class="cards">
+            <article class="card">
+                <img src="./miel.jpg" alt="Miel natural">
+                <div class="card-body">
+                    <h3>Miel natural</h3>
+                    <p>Fuente de energía y antioxidantes, utilizada en alimentos y preparaciones tradicionales.</p>
+                </div>
+            </article>
+            <article class="card">
+                <img src="./propoleo.jpg" alt="Propóleo">
+                <div class="card-body">
+                    <h3>Propóleo</h3>
+                    <p>Producto resinoso elaborado por las abejas y empleado tradicionalmente para el cuidado general.</p>
+                </div>
+            </article>
+            <article class="card">
+                <img src="./jalea.jpg" alt="Jalea real">
+                <div class="card-body">
+                    <h3>Jalea real</h3>
+                    <p>Alimento natural de la colmena valorado por su contenido nutritivo.</p>
+                </div>
+            </article>
+            <article class="card">
+                <img src="./polen.jpg" alt="Polen de abeja">
+                <div class="card-body">
+                    <h3>Polen</h3>
+                    <p>Complemento alimenticio natural que contiene proteínas, vitaminas y minerales.</p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="estadisticas">
+        <div class="dashboard">
+            <div class="info"><h2>500+</h2><p>Pacientes atendidos</p></div>
+            <div class="info"><h2>98%</h2><p>Satisfacción</p></div>
+            <div class="info"><h2>15</h2><p>Años de experiencia</p></div>
+            <div class="info"><h2>100%</h2><p>Productos naturales</p></div>
+        </div>
+    </section>
+
+    <section id="tratamientos">
+        <div class="titulo">
+            <span class="mini-titulo">Opciones disponibles</span>
+            <h2>Tratamientos naturales</h2>
+            <p>Servicios complementarios orientados al bienestar personal.</p>
+        </div>
+        <div class="cards">
+            <article class="card">
+                <img src="./apitoxina.jpg" alt="Tratamiento con apitoxina">
+                <div class="card-body">
+                    <h3>Apitoxina</h3>
+                    <p>Tratamiento complementario que debe realizarse únicamente con supervisión profesional.</p>
+                </div>
+            </article>
+            <article class="card">
+                <img src="./miel.jpg" alt="Terapia con miel">
+                <div class="card-body">
+                    <h3>Terapia con miel</h3>
+                    <p>Uso tradicional de la miel en rutinas de cuidado y bienestar.</p>
+                </div>
+            </article>
+            <article class="card">
+                <img src="./propoleo.jpg" alt="Tratamiento con propóleo">
+                <div class="card-body">
+                    <h3>Propóleo</h3>
+                    <p>Producto natural utilizado como complemento en distintas prácticas de cuidado.</p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section id="productos">
+        <div class="titulo">
+            <span class="mini-titulo">Nuestra selección</span>
+            <h2>Galería de productos</h2>
+        </div>
+        <div class="galeria">
+            <img src="./miel.jpg" alt="Miel">
+            <img src="./propoleo.jpg" alt="Propóleo">
+            <img src="./jalea.jpg" alt="Jalea real">
+            <img src="./polen.jpg" alt="Polen">
+            <img src="./apiterapia.jpg" alt="Apiterapia">
+            <img src="./apitoxina.jpg" alt="Apitoxina">
+        </div>
+    </section>
+
+    <section class="testimonios">
+        <div class="titulo">
+            <span class="mini-titulo">Experiencias</span>
+            <h2>Testimonios</h2>
+        </div>
+        <div class="cards">
+            <article class="card testimonio"><h3>María López</h3><p class="estrellas">★★★★★</p><p>“La atención fue muy clara y profesional.”</p></article>
+            <article class="card testimonio"><h3>Carlos Pérez</h3><p class="estrellas">★★★★★</p><p>“Productos naturales y excelente orientación.”</p></article>
+            <article class="card testimonio"><h3>Andrea Gómez</h3><p class="estrellas">★★★★★</p><p>“Una experiencia agradable y bien explicada.”</p></article>
+        </div>
+    </section>
+
+    <section id="contacto">
+        <div class="titulo">
+            <span class="mini-titulo">Estamos para ayudarte</span>
+            <h2>Agenda una consulta</h2>
+            <p>Completa el formulario y nos pondremos en contacto contigo.</p>
+        </div>
+        <form id="contactForm">
+            <label for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre" required>
+
+            <label for="correo">Correo electrónico</label>
+            <input type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" required>
+
+            <label for="telefono">Número de teléfono</label>
+            <input type="tel" id="telefono" name="telefono" placeholder="0999999999">
+
+            <label for="tratamiento">Tratamiento</label>
+            <select id="tratamiento" name="tratamiento" required>
+                <option value="">Seleccione un tratamiento</option>
+                <option>Apitoxina</option>
+                <option>Miel</option>
+                <option>Propóleo</option>
+                <option>Jalea Real</option>
+                <option>Polen</option>
+            </select>
+
+            <label for="consulta">Consulta</label>
+            <textarea id="consulta" name="consulta" placeholder="Escribe tu consulta" required></textarea>
+
+            <button type="submit">Enviar información por WhatsApp</button>
+        </form>
+        <div class="modo-wrap">
+            <button class="modo-btn" type="button" onclick="modoOscuro()">🌙 Cambiar modo</button>
+        </div>
+    </section>
+</main>
+
+<section id="factory">
+    <div class="factory-header">
+        <span class="mini-titulo">Mini juego</span>
+        <h2>🐝 Honey Factory</h2>
+        <p>Construye tu propia fábrica de miel y conviértete en el mejor apicultor.</p>
+    </div>
+
+    <div class="panel">
+        <div class="stat"><span>🍯</span><h3 id="miel">0</h3><p>Miel</p></div>
+        <div class="stat"><span>💰</span><h3 id="dinero">50</h3><p>Monedas</p></div>
+        <div class="stat"><span>🐝</span><h3 id="abejas">1</h3><p>Abejas</p></div>
+        <div class="stat"><span>🌼</span><h3 id="flores">3</h3><p>Flores</p></div>
+        <div class="stat"><span>🏠</span><h3 id="colmenas">1</h3><p>Colmenas</p></div>
+    </div>
+
+    <div class="colmena-area">
+        <button class="colmena" type="button" onclick="producirMiel()">
+            <img src="./colmena.png" alt="Colmena">
+            <strong>Haz clic para producir miel</strong>
+        </button>
+    </div>
+
+    <div class="barra"><div id="progreso"></div></div>
+
+    <h2 class="tituloTienda">🛒 Tienda de mejoras</h2>
+    <div class="shop">
+        <div class="shop-card"><h3>🐝 Comprar abeja</h3><p>Precio: <span id="precioAbeja">40</span> monedas</p><button onclick="comprarAbeja()">Comprar</button></div>
+        <div class="shop-card"><h3>🌼 Comprar flores</h3><p>Precio: <span id="precioFlor">30</span> monedas</p><button onclick="comprarFlor()">Comprar</button></div>
+        <div class="shop-card"><h3>🏠 Nueva colmena</h3><p>Precio: <span id="precioColmena">120</span> monedas</p><button onclick="comprarColmena()">Comprar</button></div>
+        <div class="shop-card"><h3>⚡ Mejorar producción</h3><p>Precio: <span id="precioUpgrade">200</span> monedas</p><button onclick="mejorarProduccion()">Mejorar</button></div>
+    </div>
+
+    <div class="logros">
+        <h2>🏆 Logros</h2>
+        <div id="listaLogros"><p>❌ Aún no has desbloqueado logros.</p></div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-contenido">
+        <h2>🐝 ApiBee</h2>
+        <p>Centro de apiterapia y productos naturales derivados de las abejas.</p>
+        <div class="redes">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/593963913139?text=Hola%20ApiBee%2C%20necesito%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="mailto:vcasamen.estud@ispade.edu.ec" aria-label="Correo"><i class="fas fa-envelope"></i></a>
+        </div>
+        <p class="copyright">© 2026 ApiBee | Elaborado por Victor Dixon Casamen Guaman</p>
+    </div>
+</footer>
+
+
+<a class="whatsapp-float"
+   href="https://wa.me/593963913139?text=Hola%20ApiBee%2C%20necesito%20informaci%C3%B3n."
+   target="_blank"
+   rel="noopener noreferrer"
+   aria-label="Contactar por WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<button id="arriba" aria-label="Volver arriba">↑</button>
+<script src="./script.js"></script>
+</body>
+</html>
