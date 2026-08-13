@@ -1,4 +1,3 @@
-
 const header = document.getElementById("header");
 const menuBtn = document.getElementById("menuBtn");
 const nav = document.getElementById("nav");
@@ -167,25 +166,65 @@ const authFeedback = document.getElementById("authFeedback");
 const beeMascot = document.getElementById("beeMascot");
 const beeMessage = document.getElementById("beeMessage");
 const registerPassword = document.getElementById("registerPassword");
+const registerPassword2 = document.getElementById("registerPassword2");
 const passwordStrength = document.getElementById("passwordStrength");
 const passwordStrengthText = document.getElementById("passwordStrengthText");
+const logoutBtn = document.getElementById("logoutBtn");
 
-function cambiarAuth(modo){
+const USERS_KEY = "apibeeUsers";
+const SESSION_KEY = "apibeeSession";
+
+function obtenerUsuarios(){
+    try {
+        return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+    } catch {
+        return [];
+    }
+}
+
+function guardarUsuarios(usuarios){
+    localStorage.setItem(USERS_KEY, JSON.stringify(usuarios));
+}
+
+function mostrarFeedback(texto, tipo = ""){
+    authFeedback.textContent = texto;
+    authFeedback.className = `auth-feedback ${tipo}`.trim();
+}
+
+function cambiarAuth(modo, conservarMensaje = false){
     const login = modo === "login";
     loginTab.classList.toggle("active", login);
     registerTab.classList.toggle("active", !login);
     loginForm.classList.toggle("active", login);
     registerForm.classList.toggle("active", !login);
-    authFeedback.textContent = "";
-    authFeedback.className = "auth-feedback";
+    if(!conservarMensaje) mostrarFeedback("");
+}
+
+function abrirSitio(nombre){
+    authScreen.style.display = "none";
+    siteApp.classList.remove("locked");
+    if(nombre) mensaje(`🐝 Bienvenido a ApiBee, ${nombre}`);
+    window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function cerrarSitio(){
+    localStorage.removeItem(SESSION_KEY);
+    siteApp.classList.add("locked");
+    authScreen.style.display = "grid";
+    loginForm.reset();
+    cambiarAuth("login");
+    mostrarFeedback("Sesión cerrada correctamente. 🐝", "ok");
+    window.scrollTo({top:0, behavior:"smooth"});
 }
 
 loginTab?.addEventListener("click", () => cambiarAuth("login"));
 registerTab?.addEventListener("click", () => cambiarAuth("register"));
+logoutBtn?.addEventListener("click", cerrarSitio);
 
 document.querySelectorAll(".show-pass").forEach(btn => {
     btn.addEventListener("click", () => {
         const input = document.getElementById(btn.dataset.target);
+        if(!input) return;
         input.type = input.type === "password" ? "text" : "password";
         btn.textContent = input.type === "password" ? "👁️" : "🙈";
     });
@@ -209,42 +248,59 @@ registerForm?.addEventListener("submit", (e) => {
     const nombre = document.getElementById("registerName").value.trim();
     const email = document.getElementById("registerEmail").value.trim().toLowerCase();
     const password = registerPassword.value;
-    if(password.length < 6){
-        authFeedback.textContent = "La contraseña debe tener al menos 6 caracteres.";
-        authFeedback.className = "auth-feedback error";
+    const password2 = registerPassword2.value;
+
+    if(nombre.length < 2){
+        mostrarFeedback("Escribe un nombre válido.", "error");
         return;
     }
-    localStorage.setItem("apibeeUser", JSON.stringify({nombre,email,password}));
-    authFeedback.textContent = "🐝 Cuenta creada. Ahora puedes iniciar sesión.";
-    authFeedback.className = "auth-feedback ok";
+    if(password.length < 6){
+        mostrarFeedback("La contraseña debe tener al menos 6 caracteres.", "error");
+        return;
+    }
+    if(password !== password2){
+        mostrarFeedback("Las contraseñas no coinciden.", "error");
+        return;
+    }
+
+    const usuarios = obtenerUsuarios();
+    if(usuarios.some(u => u.email === email)){
+        mostrarFeedback("Ese correo ya está registrado. Inicia sesión.", "error");
+        return;
+    }
+
+    usuarios.push({nombre, email, password});
+    guardarUsuarios(usuarios);
+    registerForm.reset();
+    passwordStrength.style.width = "0%";
+    passwordStrengthText.textContent = "Aún sin evaluar";
     document.getElementById("loginEmail").value = email;
-    cambiarAuth("login");
+    cambiarAuth("login", true);
+    mostrarFeedback("✅ Cuenta creada correctamente. Ahora inicia sesión con tu contraseña.", "ok");
 });
 
 loginForm?.addEventListener("submit", (e) => {
     e.preventDefault();
     const email = document.getElementById("loginEmail").value.trim().toLowerCase();
     const password = document.getElementById("loginPassword").value;
-    const saved = JSON.parse(localStorage.getItem("apibeeUser") || "null");
-    if(!saved || saved.email !== email || saved.password !== password){
-        authFeedback.textContent = "❌ Correo o contraseña incorrectos. Puedes registrarte primero.";
-        authFeedback.className = "auth-feedback error";
+    const usuarios = obtenerUsuarios();
+    const usuario = usuarios.find(u => u.email === email && u.password === password);
+
+    if(!usuario){
+        mostrarFeedback("❌ Correo o contraseña incorrectos. Si no tienes cuenta, regístrate primero.", "error");
         return;
     }
-    authFeedback.textContent = `🍯 ¡Bienvenido a ApiBee, ${saved.nombre}!`;
-    authFeedback.className = "auth-feedback ok";
-    setTimeout(() => {
-        authScreen.style.display = "none";
-        siteApp.classList.remove("locked");
-        window.scrollTo({top:0, behavior:"smooth"});
-    }, 450);
+
+    localStorage.setItem(SESSION_KEY, JSON.stringify({email: usuario.email, nombre: usuario.nombre}));
+    mostrarFeedback(`🍯 ¡Bienvenido, ${usuario.nombre}!`, "ok");
+    setTimeout(() => abrirSitio(usuario.nombre), 350);
 });
 
 const beePhrases = [
-    "Las abejas trabajan en equipo. ¡Tú también puedes entrar a la colmena! 🐝",
-    "Dato ApiBee: cada visita empieza con una buena bienvenida 🍯",
-    "¡Bzzz! Regístrate y descubre todo el contenido de ApiBee 🌼",
-    "La colmena está lista. ¿Iniciamos sesión? 🐝"
+    "Las abejas trabajan en equipo. ¡Crea tu cuenta y entra a la colmena! 🐝",
+    "Bzzz... tu cuenta queda guardada en este navegador 🍯",
+    "¡Haz clic! Cada nueva cuenta es una abeja más en nuestra colmena 🌼",
+    "Regístrate, inicia sesión y explora ApiBee 🐝"
 ];
 let beePhraseIndex = 0;
 beeMascot?.addEventListener("click", () => {
@@ -254,3 +310,12 @@ beeMascot?.addEventListener("click", () => {
     void beeMascot.offsetWidth;
     beeMascot.classList.add("fly");
 });
+
+// Si ya existe una sesión válida, entra directamente a la página.
+try {
+    const sesion = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    const usuarios = obtenerUsuarios();
+    if(sesion && usuarios.some(u => u.email === sesion.email)){
+        abrirSitio(sesion.nombre);
+    }
+} catch {}
