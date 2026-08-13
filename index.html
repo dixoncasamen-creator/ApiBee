@@ -9,6 +9,73 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
+<div id="authScreen" class="auth-screen" aria-label="Acceso a ApiBee">
+    <div class="bee-scene" aria-hidden="true">
+        <div class="sun"></div>
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="flower-field">
+            <span>🌼</span><span>🌻</span><span>🌼</span><span>🌷</span><span>🌼</span><span>🌻</span>
+        </div>
+        <button id="beeMascot" class="bee-mascot" type="button" aria-label="Abeja interactiva">🐝</button>
+        <div id="beeMessage" class="bee-message">¡Bienvenido a la colmena! Haz clic en mí 🐝</div>
+    </div>
+
+    <div class="auth-panel">
+        <div class="auth-brand">
+            <div class="auth-logo">🐝</div>
+            <div>
+                <span class="mini-titulo">Acceso a la colmena</span>
+                <h1>ApiBee</h1>
+                <p>Inicia sesión o crea tu cuenta para explorar nuestra experiencia de apiterapia.</p>
+            </div>
+        </div>
+
+        <div class="auth-tabs" role="tablist" aria-label="Opciones de acceso">
+            <button id="loginTab" class="auth-tab active" type="button">Iniciar sesión</button>
+            <button id="registerTab" class="auth-tab" type="button">Registrarse</button>
+        </div>
+
+        <form id="loginForm" class="auth-form active" autocomplete="on">
+            <label for="loginEmail">Correo electrónico</label>
+            <input id="loginEmail" type="email" placeholder="correo@ejemplo.com" required>
+
+            <label for="loginPassword">Contraseña</label>
+            <div class="password-wrap">
+                <input id="loginPassword" type="password" placeholder="Tu contraseña" required>
+                <button class="show-pass" data-target="loginPassword" type="button" aria-label="Mostrar contraseña">👁️</button>
+            </div>
+
+            <button class="auth-primary" type="submit">Entrar a ApiBee 🍯</button>
+            <p class="auth-note">Demo académica: la cuenta se guarda únicamente en este navegador.</p>
+        </form>
+
+        <form id="registerForm" class="auth-form" autocomplete="on">
+            <label for="registerName">Nombre completo</label>
+            <input id="registerName" type="text" placeholder="Tu nombre" required>
+
+            <label for="registerEmail">Correo electrónico</label>
+            <input id="registerEmail" type="email" placeholder="correo@ejemplo.com" required>
+
+            <label for="registerPassword">Contraseña</label>
+            <div class="password-wrap">
+                <input id="registerPassword" type="password" minlength="6" placeholder="Mínimo 6 caracteres" required>
+                <button class="show-pass" data-target="registerPassword" type="button" aria-label="Mostrar contraseña">👁️</button>
+            </div>
+
+            <div class="honey-strength" aria-live="polite">
+                <span>Fuerza de contraseña</span>
+                <div class="honey-track"><div id="passwordStrength"></div></div>
+                <small id="passwordStrengthText">Aún sin evaluar</small>
+            </div>
+
+            <button class="auth-primary" type="submit">Crear mi cuenta 🐝</button>
+        </form>
+
+        <div id="authFeedback" class="auth-feedback" aria-live="polite"></div>
+    </div>
+</div>
+<div id="siteApp" class="site-app locked">
 <header id="header">
     <a class="logo" href="#inicio" aria-label="Ir al inicio">
         <span>🐝 ApiBee</span>
@@ -257,5 +324,6 @@
 
 <button id="arriba" aria-label="Volver arriba">↑</button>
 <script src="./script.js"></script>
+</div>
 </body>
 </html>
