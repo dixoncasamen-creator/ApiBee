@@ -1,337 +1,261 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ApiBee, centro de apiterapia y productos naturales derivados de las abejas.">
-    <title>ApiBee | Salud Natural</title>
-    <link rel="stylesheet" href="./estilos.css?v=3">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ApiBee, plataforma interactiva de apiterapia, productos naturales, citas y Honey Factory.">
+  <title>ApiBee | Plataforma de bienestar natural</title>
+  <link rel="stylesheet" href="./estilos.css?v=10">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
-<div id="authScreen" class="auth-screen" aria-label="Acceso a ApiBee">
-    <div class="bee-scene" aria-hidden="true">
-        <div class="sun"></div>
-        <div class="cloud cloud-1"></div>
-        <div class="cloud cloud-2"></div>
-        <div class="flower-field">
-            <span>🌼</span><span>🌻</span><span>🌼</span><span>🌷</span><span>🌼</span><span>🌻</span>
-        </div>
-        <button id="beeMascot" class="bee-mascot" type="button" aria-label="Abeja interactiva">🐝</button>
-        <div id="beeMessage" class="bee-message">¡Bienvenido a la colmena! Haz clic en mí 🐝</div>
+  <section id="authScreen" class="auth-screen" aria-label="Acceso a ApiBee">
+    <div class="bee-scene">
+      <div class="sun"></div>
+      <div class="cloud cloud-1"></div>
+      <div class="cloud cloud-2"></div>
+      <div class="auth-honeycomb" aria-hidden="true">
+        <span>⬡</span><span>⬡</span><span>⬡</span><span>⬡</span><span>⬡</span>
+      </div>
+      <button id="beeMascot" class="bee-mascot" type="button" aria-label="Abeja interactiva">🐝</button>
+      <div id="beeMessage" class="bee-message" aria-live="polite">¡Bienvenido a la colmena! Atrápame 5 veces 🐝</div>
+      <div class="pollen-counter">🌼 Polen recolectado: <strong id="pollenCount">0</strong>/5</div>
+      <div class="flower-field" aria-hidden="true"><span>🌼</span><span>🌻</span><span>🌷</span><span>🌼</span><span>🌻</span><span>🌼</span></div>
     </div>
 
     <div class="auth-panel">
-        <div class="auth-brand">
-            <div class="auth-logo">🐝</div>
-            <div>
-                <span class="mini-titulo">Acceso a la colmena</span>
-                <h1>ApiBee</h1>
-                <p>Inicia sesión o crea tu cuenta para explorar nuestra experiencia de apiterapia.</p>
-            </div>
+      <div class="auth-brand">
+        <div class="auth-logo">🐝</div>
+        <div>
+          <span class="mini-titulo">Acceso a la colmena</span>
+          <h1>ApiBee</h1>
+          <p>Regístrate, administra tus citas, compra productos y desarrolla tu propia Honey Factory.</p>
         </div>
+      </div>
 
-        <div class="auth-tabs" role="tablist" aria-label="Opciones de acceso">
-            <button id="loginTab" class="auth-tab active" type="button">Iniciar sesión</button>
-            <button id="registerTab" class="auth-tab" type="button">Registrarse</button>
+      <div class="auth-tabs" role="tablist">
+        <button id="loginTab" class="auth-tab active" type="button">Iniciar sesión</button>
+        <button id="registerTab" class="auth-tab" type="button">Registrarse</button>
+      </div>
+
+      <form id="loginForm" class="auth-form active" autocomplete="on">
+        <label for="loginEmail">Correo electrónico</label>
+        <input id="loginEmail" type="email" autocomplete="email" placeholder="correo@ejemplo.com" required>
+        <label for="loginPassword">Contraseña</label>
+        <div class="password-wrap">
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Tu contraseña" required>
+          <button class="show-pass" data-target="loginPassword" type="button" aria-label="Mostrar contraseña">👁️</button>
         </div>
+        <div class="auth-actions-row">
+          <label class="remember-label"><input id="rememberSession" type="checkbox" checked> Recordarme</label>
+          <button id="forgotBtn" class="link-btn" type="button">¿Olvidaste tu contraseña?</button>
+        </div>
+        <button class="auth-primary" type="submit">Entrar a ApiBee 🍯</button>
+      </form>
 
-        <form id="loginForm" class="auth-form active" autocomplete="on">
-            <label for="loginEmail">Correo electrónico</label>
-            <input id="loginEmail" type="email" placeholder="correo@ejemplo.com" required>
+      <form id="registerForm" class="auth-form" autocomplete="on">
+        <label for="registerName">Nombre completo</label>
+        <input id="registerName" type="text" autocomplete="name" placeholder="Tu nombre" required>
+        <label for="registerEmail">Correo electrónico</label>
+        <input id="registerEmail" type="email" autocomplete="email" placeholder="correo@ejemplo.com" required>
+        <label for="registerPhone">Teléfono</label>
+        <input id="registerPhone" type="tel" autocomplete="tel" placeholder="0999999999">
+        <label for="registerPassword">Contraseña</label>
+        <div class="password-wrap">
+          <input id="registerPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Mínimo 6 caracteres" required>
+          <button class="show-pass" data-target="registerPassword" type="button" aria-label="Mostrar contraseña">👁️</button>
+        </div>
+        <label for="registerPassword2">Confirmar contraseña</label>
+        <div class="password-wrap">
+          <input id="registerPassword2" type="password" autocomplete="new-password" minlength="6" placeholder="Repite tu contraseña" required>
+          <button class="show-pass" data-target="registerPassword2" type="button" aria-label="Mostrar contraseña">👁️</button>
+        </div>
+        <div class="honey-strength" aria-live="polite">
+          <span>Fuerza de contraseña</span>
+          <div class="honey-track"><div id="passwordStrength"></div></div>
+          <small id="passwordStrengthText">Aún sin evaluar</small>
+        </div>
+        <button class="auth-primary" type="submit">Crear mi cuenta 🐝</button>
+      </form>
 
-            <label for="loginPassword">Contraseña</label>
-            <div class="password-wrap">
-                <input id="loginPassword" type="password" placeholder="Tu contraseña" required>
-                <button class="show-pass" data-target="loginPassword" type="button" aria-label="Mostrar contraseña">👁️</button>
-            </div>
-
-            <button class="auth-primary" type="submit">Entrar a ApiBee 🍯</button>
-            <p class="auth-note">Demo académica: la cuenta se guarda únicamente en este navegador.</p>
-        </form>
-
-        <form id="registerForm" class="auth-form" autocomplete="on">
-            <label for="registerName">Nombre completo</label>
-            <input id="registerName" type="text" placeholder="Tu nombre" required>
-
-            <label for="registerEmail">Correo electrónico</label>
-            <input id="registerEmail" type="email" placeholder="correo@ejemplo.com" required>
-
-            <label for="registerPassword">Contraseña</label>
-            <div class="password-wrap">
-                <input id="registerPassword" type="password" minlength="6" placeholder="Mínimo 6 caracteres" required>
-                <button class="show-pass" data-target="registerPassword" type="button" aria-label="Mostrar contraseña">👁️</button>
-            </div>
-
-            <label for="registerPassword2">Confirmar contraseña</label>
-            <div class="password-wrap">
-                <input id="registerPassword2" type="password" minlength="6" placeholder="Repite tu contraseña" required>
-                <button class="show-pass" data-target="registerPassword2" type="button" aria-label="Mostrar contraseña">👁️</button>
-            </div>
-
-            <div class="honey-strength" aria-live="polite">
-                <span>Fuerza de contraseña</span>
-                <div class="honey-track"><div id="passwordStrength"></div></div>
-                <small id="passwordStrengthText">Aún sin evaluar</small>
-            </div>
-
-            <button class="auth-primary" type="submit">Crear mi cuenta 🐝</button>
-        </form>
-
-        <div id="authFeedback" class="auth-feedback" aria-live="polite"></div>
+      <div id="forgotBox" class="forgot-box hidden">
+        <h3>🔐 Recuperar contraseña</h3>
+        <p>Modo demostración local: escribe tu correo y una nueva contraseña.</p>
+        <label for="forgotEmail">Correo registrado</label>
+        <input id="forgotEmail" type="email" placeholder="correo@ejemplo.com">
+        <label for="forgotPassword">Nueva contraseña</label>
+        <div class="password-wrap">
+          <input id="forgotPassword" type="password" minlength="6" placeholder="Nueva contraseña">
+          <button class="show-pass" data-target="forgotPassword" type="button" aria-label="Mostrar contraseña">👁️</button>
+        </div>
+        <div class="forgot-actions">
+          <button id="resetPasswordBtn" class="auth-primary compact" type="button">Cambiar contraseña</button>
+          <button id="cancelForgotBtn" class="secondary-btn" type="button">Cancelar</button>
+        </div>
+      </div>
+      <div id="authFeedback" class="auth-feedback" aria-live="polite"></div>
+      <p class="demo-note">Demo académica. Las cuentas y datos se guardan únicamente en este navegador.</p>
     </div>
-</div>
-<div id="siteApp" class="site-app locked">
-<header id="header">
-    <a class="logo" href="#inicio" aria-label="Ir al inicio">
-        <span>🐝 ApiBee</span>
-    </a>
-    <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
-    <nav id="nav">
+  </section>
+
+  <div id="siteApp" class="site-app locked">
+    <header id="header">
+      <a class="logo" href="#inicio"><span>🐝 ApiBee</span></a>
+      <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
+      <nav id="nav">
         <ul>
-            <li><a href="#inicio">Inicio</a></li>
-            <li><a href="#beneficios">Beneficios</a></li>
-            <li><a href="#productos">Productos</a></li>
-            <li><a href="#tratamientos">Tratamientos</a></li>
-            <li><a href="#contacto">Contacto</a></li>
-            <li><a href="#factory">Honey Factory</a></li>
-            <li><button id="logoutBtn" class="logout-btn" type="button">Cerrar sesión</button></li>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#dashboardUsuario">Mi panel</a></li>
+          <li><a href="#citas">Citas</a></li>
+          <li><a href="#tienda">Tienda</a></li>
+          <li><a href="#factory">Honey Factory</a></li>
+          <li id="adminNavItem" class="hidden"><a href="#adminPanel">Admin</a></li>
+          <li><button id="cartNavBtn" class="nav-icon-btn" type="button" aria-label="Abrir carrito">🛒 <span id="cartCount">0</span></button></li>
+          <li><button id="logoutBtn" class="logout-btn" type="button">Cerrar sesión</button></li>
         </ul>
-    </nav>
-</header>
+      </nav>
+    </header>
 
-<section class="hero" id="inicio">
-    <div class="hero-contenido">
-        <span class="etiqueta">Bienestar natural</span>
-        <h1>Descubre el poder de la <span>Apiterapia</span></h1>
-        <p>Conoce los beneficios de la miel, el propóleo, la jalea real, el polen y otros productos de la colmena.</p>
+    <section class="hero" id="inicio">
+      <div class="hero-contenido">
+        <span class="etiqueta">Bienestar natural + experiencia digital</span>
+        <h1>Bienvenido a tu <span>colmena ApiBee</span></h1>
+        <p id="heroWelcome">Gestiona tu experiencia de bienestar, acumula BeePoints y haz crecer tu fábrica de miel.</p>
         <div class="hero-botones">
-            <a href="https://wa.me/593963913139?text=Hola%20ApiBee%2C%20quiero%20reservar%20una%20consulta." class="btn" target="_blank" rel="noopener noreferrer">Reservar por WhatsApp</a>
-            <a href="#beneficios" class="btn2">Conocer más</a>
+          <a href="#dashboardUsuario" class="btn">Ir a mi panel</a>
+          <a href="#citas" class="btn2">Agendar cita</a>
         </div>
-    </div>
-</section>
-
-<main>
-    <section class="acerca">
-        <div class="imagen">
-            <img src="./apiterapia.jpg" alt="Sesión de apiterapia">
-        </div>
-        <div class="texto">
-            <span class="mini-titulo">Sobre nosotros</span>
-            <h2 id="mensaje">¿Qué es la Apiterapia?</h2>
-            <p>La apiterapia es una práctica complementaria que emplea productos elaborados por las abejas. Entre los más conocidos se encuentran la miel, el propóleo, la jalea real, el polen y la apitoxina.</p>
-            <p>En ApiBee promovemos su uso responsable como complemento del bienestar y nunca como reemplazo de la atención médica profesional.</p>
-            <button type="button" onclick="actualizarMensaje()">Más información</button>
-        </div>
+      </div>
     </section>
 
-    <section id="beneficios">
+    <main>
+      <section id="dashboardUsuario" class="user-dashboard-section">
         <div class="titulo">
-            <span class="mini-titulo">Lo mejor de la colmena</span>
-            <h2>Beneficios de la Apiterapia</h2>
-            <p>Productos naturales con distintas propiedades y usos tradicionales.</p>
+          <span class="mini-titulo">Centro personal</span>
+          <h2>Mi Panel ApiBee</h2>
+          <p>Todo lo importante de tu cuenta en un solo lugar.</p>
         </div>
-        <div class="cards">
-            <article class="card">
-                <img src="./miel.jpg" alt="Miel natural">
-                <div class="card-body">
-                    <h3>Miel natural</h3>
-                    <p>Fuente de energía y antioxidantes, utilizada en alimentos y preparaciones tradicionales.</p>
-                </div>
-            </article>
-            <article class="card">
-                <img src="./propoleo.jpg" alt="Propóleo">
-                <div class="card-body">
-                    <h3>Propóleo</h3>
-                    <p>Producto resinoso elaborado por las abejas y empleado tradicionalmente para el cuidado general.</p>
-                </div>
-            </article>
-            <article class="card">
-                <img src="./jalea.jpg" alt="Jalea real">
-                <div class="card-body">
-                    <h3>Jalea real</h3>
-                    <p>Alimento natural de la colmena valorado por su contenido nutritivo.</p>
-                </div>
-            </article>
-            <article class="card">
-                <img src="./polen.jpg" alt="Polen de abeja">
-                <div class="card-body">
-                    <h3>Polen</h3>
-                    <p>Complemento alimenticio natural que contiene proteínas, vitaminas y minerales.</p>
-                </div>
-            </article>
+        <div class="welcome-strip">
+          <div class="profile-avatar" id="profileAvatar">🐝</div>
+          <div><h3 id="dashName">Usuario ApiBee</h3><p id="dashEmail">correo@ejemplo.com</p></div>
+          <button id="editProfileBtn" class="secondary-btn" type="button">Editar perfil</button>
         </div>
-    </section>
-
-    <section class="estadisticas">
-        <div class="dashboard">
-            <div class="info"><h2>500+</h2><p>Pacientes atendidos</p></div>
-            <div class="info"><h2>98%</h2><p>Satisfacción</p></div>
-            <div class="info"><h2>15</h2><p>Años de experiencia</p></div>
-            <div class="info"><h2>100%</h2><p>Productos naturales</p></div>
+        <div class="dashboard-cards">
+          <article class="dash-card"><span>🍯</span><h3 id="beePointsValue">0</h3><p>BeePoints</p></article>
+          <article class="dash-card"><span>📅</span><h3 id="nextAppointmentValue">Sin cita</h3><p>Próxima cita</p></article>
+          <article class="dash-card"><span>🛍️</span><h3 id="ordersValue">0</h3><p>Pedidos</p></article>
+          <article class="dash-card"><span>🏆</span><h3 id="honeyLevelValue">Nivel 1</h3><p>Honey Factory</p></article>
         </div>
-    </section>
-
-    <section id="tratamientos">
-        <div class="titulo">
-            <span class="mini-titulo">Opciones disponibles</span>
-            <h2>Tratamientos naturales</h2>
-            <p>Servicios complementarios orientados al bienestar personal.</p>
+        <div class="beepoints-progress-wrap">
+          <div><strong>Camino al siguiente rango</strong><span id="beeRankLabel">Abeja Exploradora</span></div>
+          <div class="beepoints-track"><div id="beePointsProgress"></div></div>
+          <small id="beePointsHint">Consigue BeePoints agendando citas, realizando pedidos y jugando.</small>
         </div>
-        <div class="cards">
-            <article class="card">
-                <img src="./apitoxina.jpg" alt="Tratamiento con apitoxina">
-                <div class="card-body">
-                    <h3>Apitoxina</h3>
-                    <p>Tratamiento complementario que debe realizarse únicamente con supervisión profesional.</p>
-                </div>
-            </article>
-            <article class="card">
-                <img src="./miel.jpg" alt="Terapia con miel">
-                <div class="card-body">
-                    <h3>Terapia con miel</h3>
-                    <p>Uso tradicional de la miel en rutinas de cuidado y bienestar.</p>
-                </div>
-            </article>
-            <article class="card">
-                <img src="./propoleo.jpg" alt="Tratamiento con propóleo">
-                <div class="card-body">
-                    <h3>Propóleo</h3>
-                    <p>Producto natural utilizado como complemento en distintas prácticas de cuidado.</p>
-                </div>
-            </article>
-        </div>
-    </section>
+      </section>
 
-    <section id="productos">
-        <div class="titulo">
-            <span class="mini-titulo">Nuestra selección</span>
-            <h2>Galería de productos</h2>
-        </div>
-        <div class="galeria">
-            <img src="./miel.jpg" alt="Miel">
-            <img src="./propoleo.jpg" alt="Propóleo">
-            <img src="./jalea.jpg" alt="Jalea real">
-            <img src="./polen.jpg" alt="Polen">
-            <img src="./apiterapia.jpg" alt="Apiterapia">
-            <img src="./apitoxina.jpg" alt="Apitoxina">
-        </div>
-    </section>
-
-    <section class="testimonios">
-        <div class="titulo">
-            <span class="mini-titulo">Experiencias</span>
-            <h2>Testimonios</h2>
-        </div>
-        <div class="cards">
-            <article class="card testimonio"><h3>María López</h3><p class="estrellas">★★★★★</p><p>“La atención fue muy clara y profesional.”</p></article>
-            <article class="card testimonio"><h3>Carlos Pérez</h3><p class="estrellas">★★★★★</p><p>“Productos naturales y excelente orientación.”</p></article>
-            <article class="card testimonio"><h3>Andrea Gómez</h3><p class="estrellas">★★★★★</p><p>“Una experiencia agradable y bien explicada.”</p></article>
-        </div>
-    </section>
-
-    <section id="contacto">
-        <div class="titulo">
-            <span class="mini-titulo">Estamos para ayudarte</span>
-            <h2>Agenda una consulta</h2>
-            <p>Completa el formulario y nos pondremos en contacto contigo.</p>
-        </div>
-        <form id="contactForm">
-            <label for="nombre">Nombre completo</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre" required>
-
-            <label for="correo">Correo electrónico</label>
-            <input type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" required>
-
-            <label for="telefono">Número de teléfono</label>
-            <input type="tel" id="telefono" name="telefono" placeholder="0999999999">
-
-            <label for="tratamiento">Tratamiento</label>
-            <select id="tratamiento" name="tratamiento" required>
-                <option value="">Seleccione un tratamiento</option>
-                <option>Apitoxina</option>
-                <option>Miel</option>
-                <option>Propóleo</option>
-                <option>Jalea Real</option>
-                <option>Polen</option>
-            </select>
-
-            <label for="consulta">Consulta</label>
-            <textarea id="consulta" name="consulta" placeholder="Escribe tu consulta" required></textarea>
-
-            <button type="submit">Enviar información por WhatsApp</button>
+      <section id="perfil" class="profile-section hidden">
+        <div class="titulo"><span class="mini-titulo">Cuenta</span><h2>Editar perfil</h2></div>
+        <form id="profileForm" class="standard-form">
+          <label for="profileName">Nombre</label><input id="profileName" type="text" required>
+          <label for="profileEmail">Correo</label><input id="profileEmail" type="email" disabled>
+          <label for="profilePhone">Teléfono</label><input id="profilePhone" type="tel" placeholder="0999999999">
+          <label for="profileCity">Ciudad</label><input id="profileCity" type="text" placeholder="Quito">
+          <label for="profileBio">Sobre mí</label><textarea id="profileBio" placeholder="Cuéntanos brevemente sobre tus intereses de bienestar."></textarea>
+          <div class="form-inline-actions"><button type="submit">Guardar cambios</button><button id="cancelProfileBtn" type="button" class="secondary-btn">Cancelar</button></div>
         </form>
-        <div class="modo-wrap">
-            <button class="modo-btn" type="button" onclick="modoOscuro()">🌙 Cambiar modo</button>
+      </section>
+
+      <section id="citas">
+        <div class="titulo"><span class="mini-titulo">Agenda digital</span><h2>Mis citas</h2><p>Reserva y administra tus consultas de forma sencilla.</p></div>
+        <div class="appointments-layout">
+          <form id="appointmentForm" class="standard-form">
+            <h3>📅 Nueva cita</h3>
+            <label for="appointmentTreatment">Tratamiento</label>
+            <select id="appointmentTreatment" required>
+              <option value="">Selecciona una opción</option><option>Consulta de apiterapia</option><option>Apitoxina</option><option>Terapia con miel</option><option>Propóleo</option><option>Jalea Real</option><option>Polen</option>
+            </select>
+            <label for="appointmentDate">Fecha</label><input id="appointmentDate" type="date" required>
+            <label for="appointmentTime">Hora</label><select id="appointmentTime" required><option value="">Selecciona una hora</option><option>09:00</option><option>10:30</option><option>12:00</option><option>14:00</option><option>15:30</option><option>17:00</option></select>
+            <label for="appointmentNotes">Motivo / observación</label><textarea id="appointmentNotes" placeholder="Escribe una observación breve"></textarea>
+            <button type="submit">Confirmar cita +30 🍯</button>
+          </form>
+          <div class="appointments-box">
+            <div class="box-heading"><h3>Próximas citas</h3><span id="appointmentCountBadge" class="status-badge">0</span></div>
+            <div id="appointmentsList" class="stack-list"><p class="empty-state">Aún no tienes citas registradas.</p></div>
+          </div>
         </div>
+      </section>
+
+      <section id="beneficios">
+        <div class="titulo"><span class="mini-titulo">Lo mejor de la colmena</span><h2>Beneficios y productos de la colmena</h2><p>Información general sobre productos tradicionales derivados de las abejas.</p></div>
+        <div class="cards">
+          <article class="card"><img src="./miel.jpg" alt="Miel natural"><div class="card-body"><h3>Miel natural</h3><p>Fuente de energía y antioxidantes, utilizada en alimentos y preparaciones tradicionales.</p></div></article>
+          <article class="card"><img src="./propoleo.jpg" alt="Propóleo"><div class="card-body"><h3>Propóleo</h3><p>Producto resinoso elaborado por las abejas y utilizado tradicionalmente en rutinas de cuidado.</p></div></article>
+          <article class="card"><img src="./jalea.jpg" alt="Jalea real"><div class="card-body"><h3>Jalea real</h3><p>Alimento natural de la colmena valorado por su contenido nutritivo.</p></div></article>
+          <article class="card"><img src="./polen.jpg" alt="Polen"><div class="card-body"><h3>Polen</h3><p>Complemento alimenticio natural que contiene proteínas, vitaminas y minerales.</p></div></article>
+        </div>
+      </section>
+
+      <section id="tienda" class="store-section">
+        <div class="titulo"><span class="mini-titulo">ApiBee Market</span><h2>Tienda de productos</h2><p>Agrega productos al carrito y genera tu pedido por WhatsApp.</p></div>
+        <div id="productGrid" class="product-grid"></div>
+      </section>
+
+      <section id="contacto">
+        <div class="titulo"><span class="mini-titulo">Contacto rápido</span><h2>Consulta por WhatsApp</h2><p>Envía una consulta general al equipo de ApiBee.</p></div>
+        <form id="contactForm" class="standard-form">
+          <label for="nombre">Nombre completo</label><input id="nombre" type="text" required>
+          <label for="correo">Correo electrónico</label><input id="correo" type="email" required>
+          <label for="telefono">Teléfono</label><input id="telefono" type="tel">
+          <label for="tratamiento">Tratamiento</label><select id="tratamiento" required><option value="">Seleccione</option><option>Apitoxina</option><option>Miel</option><option>Propóleo</option><option>Jalea Real</option><option>Polen</option></select>
+          <label for="consulta">Consulta</label><textarea id="consulta" required></textarea>
+          <button type="submit">Enviar por WhatsApp</button>
+        </form>
+        <div class="modo-wrap"><button class="modo-btn" id="darkModeBtn" type="button">🌙 Cambiar modo</button></div>
+      </section>
+    </main>
+
+    <section id="factory">
+      <div class="factory-header"><span class="mini-titulo">Mini juego persistente</span><h2>🐝 Honey Factory</h2><p>Tu progreso se guarda con tu cuenta. Produce miel, mejora la colmena y completa misiones.</p></div>
+      <div class="mission-card"><div><strong>🎯 Misión de la colmena</strong><p id="missionText">Produce 100 unidades de miel.</p></div><div class="mission-right"><span id="missionProgressText">0/100</span><button id="claimMissionBtn" type="button" disabled>Reclamar +50 🍯</button></div></div>
+      <div class="panel">
+        <div class="stat"><span>🍯</span><h3 id="miel">0</h3><p>Miel</p></div><div class="stat"><span>💰</span><h3 id="dinero">50</h3><p>Monedas</p></div><div class="stat"><span>🐝</span><h3 id="abejas">1</h3><p>Abejas</p></div><div class="stat"><span>🌼</span><h3 id="flores">3</h3><p>Flores</p></div><div class="stat"><span>🏠</span><h3 id="colmenas">1</h3><p>Colmenas</p></div>
+      </div>
+      <div class="bee-flight-zone" aria-hidden="true"><span class="flying-bee b1">🐝</span><span class="flying-bee b2">🐝</span><span class="flying-bee b3">🐝</span></div>
+      <div class="colmena-area"><button id="produceHoneyBtn" class="colmena" type="button"><img src="./colmena.png" alt="Colmena"><strong>Haz clic para producir miel</strong></button></div>
+      <div class="barra"><div id="progreso"></div></div>
+      <h2 class="tituloTienda">🛒 Tienda de mejoras</h2>
+      <div class="shop">
+        <div class="shop-card"><h3>🐝 Comprar abeja</h3><p>Precio: <span id="precioAbeja">40</span></p><button id="buyBeeBtn" type="button">Comprar</button></div>
+        <div class="shop-card"><h3>🌼 Comprar flor</h3><p>Precio: <span id="precioFlor">30</span></p><button id="buyFlowerBtn" type="button">Comprar</button></div>
+        <div class="shop-card"><h3>🏠 Nueva colmena</h3><p>Precio: <span id="precioColmena">120</span></p><button id="buyHiveBtn" type="button">Comprar</button></div>
+        <div class="shop-card"><h3>⚡ Producción</h3><p>Precio: <span id="precioUpgrade">200</span></p><button id="upgradeBtn" type="button">Mejorar</button></div>
+      </div>
+      <div class="logros"><h2>🏆 Logros</h2><div id="listaLogros"><p>❌ Aún no has desbloqueado logros.</p></div></div>
     </section>
-</main>
 
-<section id="factory">
-    <div class="factory-header">
-        <span class="mini-titulo">Mini juego</span>
-        <h2>🐝 Honey Factory</h2>
-        <p>Construye tu propia fábrica de miel y conviértete en el mejor apicultor.</p>
-    </div>
+    <section id="adminPanel" class="admin-section hidden">
+      <div class="titulo"><span class="mini-titulo">Solo administrador</span><h2>Panel de administración</h2><p>Resumen general de actividad almacenada en este navegador.</p></div>
+      <div class="admin-stats"><div class="dash-card"><span>👥</span><h3 id="adminUsersCount">0</h3><p>Usuarios</p></div><div class="dash-card"><span>📅</span><h3 id="adminAppointmentsCount">0</h3><p>Citas</p></div><div class="dash-card"><span>🛍️</span><h3 id="adminOrdersCount">0</h3><p>Pedidos</p></div><div class="dash-card"><span>💵</span><h3 id="adminRevenue">$0.00</h3><p>Pedidos generados</p></div></div>
+      <div class="admin-grid">
+        <div class="admin-box"><h3>Usuarios registrados</h3><div id="adminUsersList" class="stack-list"></div></div>
+        <div class="admin-box"><h3>Citas registradas</h3><div id="adminAppointmentsList" class="stack-list"></div></div>
+        <div class="admin-box admin-orders"><h3>Pedidos generados</h3><div id="adminOrdersList" class="stack-list"></div></div>
+      </div>
+    </section>
 
-    <div class="panel">
-        <div class="stat"><span>🍯</span><h3 id="miel">0</h3><p>Miel</p></div>
-        <div class="stat"><span>💰</span><h3 id="dinero">50</h3><p>Monedas</p></div>
-        <div class="stat"><span>🐝</span><h3 id="abejas">1</h3><p>Abejas</p></div>
-        <div class="stat"><span>🌼</span><h3 id="flores">3</h3><p>Flores</p></div>
-        <div class="stat"><span>🏠</span><h3 id="colmenas">1</h3><p>Colmenas</p></div>
-    </div>
+    <footer><div class="footer-contenido"><h2>🐝 ApiBee</h2><p>Plataforma académica de apiterapia, comercio y experiencia interactiva.</p><div class="redes"><a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a><a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a><a href="https://wa.me/593963913139" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a><a href="mailto:vcasamen.estud@ispade.edu.ec" aria-label="Correo"><i class="fas fa-envelope"></i></a></div><p class="copyright">© 2026 ApiBee | Elaborado por Victor Dixon Casamen Guaman</p></div></footer>
 
-    <div class="colmena-area">
-        <button class="colmena" type="button" onclick="producirMiel()">
-            <img src="./colmena.png" alt="Colmena">
-            <strong>Haz clic para producir miel</strong>
-        </button>
-    </div>
+    <aside id="cartDrawer" class="cart-drawer" aria-label="Carrito de compras">
+      <div class="cart-header"><div><span class="mini-titulo">Tu pedido</span><h2>🛒 Carrito</h2></div><button id="closeCartBtn" class="icon-close" type="button">✕</button></div>
+      <div id="cartItems" class="cart-items"><p class="empty-state">Tu carrito está vacío.</p></div>
+      <div class="cart-footer"><div class="cart-total"><span>Total</span><strong id="cartTotal">$0.00</strong></div><button id="checkoutBtn" type="button">Finalizar por WhatsApp +20 🍯</button><button id="clearCartBtn" class="secondary-btn" type="button">Vaciar carrito</button></div>
+    </aside>
+    <div id="drawerOverlay" class="drawer-overlay"></div>
 
-    <div class="barra"><div id="progreso"></div></div>
-
-    <h2 class="tituloTienda">🛒 Tienda de mejoras</h2>
-    <div class="shop">
-        <div class="shop-card"><h3>🐝 Comprar abeja</h3><p>Precio: <span id="precioAbeja">40</span> monedas</p><button onclick="comprarAbeja()">Comprar</button></div>
-        <div class="shop-card"><h3>🌼 Comprar flores</h3><p>Precio: <span id="precioFlor">30</span> monedas</p><button onclick="comprarFlor()">Comprar</button></div>
-        <div class="shop-card"><h3>🏠 Nueva colmena</h3><p>Precio: <span id="precioColmena">120</span> monedas</p><button onclick="comprarColmena()">Comprar</button></div>
-        <div class="shop-card"><h3>⚡ Mejorar producción</h3><p>Precio: <span id="precioUpgrade">200</span> monedas</p><button onclick="mejorarProduccion()">Mejorar</button></div>
-    </div>
-
-    <div class="logros">
-        <h2>🏆 Logros</h2>
-        <div id="listaLogros"><p>❌ Aún no has desbloqueado logros.</p></div>
-    </div>
-</section>
-
-<footer>
-    <div class="footer-contenido">
-        <h2>🐝 ApiBee</h2>
-        <p>Centro de apiterapia y productos naturales derivados de las abejas.</p>
-        <div class="redes">
-            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="https://wa.me/593963913139?text=Hola%20ApiBee%2C%20necesito%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-            <a href="mailto:vcasamen.estud@ispade.edu.ec" aria-label="Correo"><i class="fas fa-envelope"></i></a>
-        </div>
-        <p class="copyright">© 2026 ApiBee | Elaborado por Victor Dixon Casamen Guaman</p>
-    </div>
-</footer>
-
-
-<a class="whatsapp-float"
-   href="https://wa.me/593963913139?text=Hola%20ApiBee%2C%20necesito%20informaci%C3%B3n."
-   target="_blank"
-   rel="noopener noreferrer"
-   aria-label="Contactar por WhatsApp">
-    <i class="fab fa-whatsapp"></i>
-</a>
-
-<button id="arriba" aria-label="Volver arriba">↑</button>
-<script src="./script.js"></script>
-</div>
+    <a class="whatsapp-float" href="https://wa.me/593963913139?text=Hola%20ApiBee%2C%20necesito%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+    <button id="arriba" aria-label="Volver arriba">↑</button>
+  </div>
+  <script src="./script.js?v=10"></script>
 </body>
 </html>
