@@ -1,321 +1,70 @@
-const header = document.getElementById("header");
-const menuBtn = document.getElementById("menuBtn");
-const nav = document.getElementById("nav");
-const arriba = document.getElementById("arriba");
-const form = document.getElementById("contactForm");
+const $ = (id) => document.getElementById(id);
+const USERS_KEY='apibeeUsersV3', SESSION_KEY='apibeeSessionV3', APPTS_KEY='apibeeAppointmentsV3', ORDERS_KEY='apibeeOrdersV3';
+const ADMIN_EMAIL='admin@apibee.ec', ADMIN_PASSWORD='ApiBee2026!';
+let currentUser=null, cart=[], pollenCount=0;
+let game={miel:0,dinero:50,abejas:1,flores:3,colmenas:1,nivel:1,precioAbeja:40,precioFlor:30,precioColmena:120,precioUpgrade:200,progreso:0,missionClaimed:false};
 
-menuBtn.addEventListener("click", () => nav.classList.toggle("abierto"));
-document.querySelectorAll("nav a").forEach(link => {
-    link.addEventListener("click", () => nav.classList.remove("abierto"));
-});
+function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback));}catch{return fallback}}
+function write(key,value){localStorage.setItem(key,JSON.stringify(value))}
+function uid(prefix='id'){return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`}
+function escapeHTML(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function money(v){return `$${Number(v).toFixed(2)}`}
+function todayISO(){const d=new Date();const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
 
-window.addEventListener("scroll", () => {
-    header.style.boxShadow = window.scrollY > 50 ? "0 8px 25px rgba(0,0,0,.25)" : "none";
-    arriba.style.display = window.scrollY > 450 ? "block" : "none";
-});
+function seedAdmin(){const users=read(USERS_KEY,[]);if(!users.some(u=>u.email===ADMIN_EMAIL)){users.push({id:uid('usr'),nombre:'Administrador ApiBee',email:ADMIN_EMAIL,phone:'',city:'',bio:'Panel administrativo de demostración.',password:ADMIN_PASSWORD,role:'admin',beePoints:250,createdAt:new Date().toISOString()});write(USERS_KEY,users)}}seedAdmin();
+function users(){return read(USERS_KEY,[])}function saveUsers(v){write(USERS_KEY,v)}
+function saveCurrentUser(){const list=users();const i=list.findIndex(u=>u.id===currentUser.id);if(i>=0){list[i]=currentUser;saveUsers(list)}}
+function addPoints(n,reason=''){if(!currentUser||currentUser.role==='admin')return;currentUser.beePoints=(currentUser.beePoints||0)+n;saveCurrentUser();renderDashboard();if(n>0)toast(`🍯 +${n} BeePoints${reason?` · ${reason}`:''}`)}
 
-arriba.addEventListener("click", () => window.scrollTo({top:0, behavior:"smooth"}));
+const authScreen=$('authScreen'), siteApp=$('siteApp'), loginForm=$('loginForm'), registerForm=$('registerForm'), authFeedback=$('authFeedback');
+function feedback(text,type=''){authFeedback.textContent=text;authFeedback.className=`auth-feedback ${type}`.trim()}
+function switchAuth(mode){$('forgotBox').classList.add('hidden');const login=mode==='login';$('loginTab').classList.toggle('active',login);$('registerTab').classList.toggle('active',!login);loginForm.classList.toggle('active',login);registerForm.classList.toggle('active',!login);feedback('')}
+$('loginTab').addEventListener('click',()=>switchAuth('login'));$('registerTab').addEventListener('click',()=>switchAuth('register'));
 
-function actualizarMensaje(){
-    document.getElementById("mensaje").textContent =
-        "La apiterapia aprovecha productos naturales de la colmena como complemento del bienestar.";
-}
+document.querySelectorAll('.show-pass').forEach(btn=>btn.addEventListener('click',(e)=>{e.preventDefault();const input=$(btn.dataset.target);if(!input)return;const pos=input.selectionStart;input.type=input.type==='password'?'text':'password';btn.textContent=input.type==='password'?'👁️':'🙈';input.focus();try{input.setSelectionRange(pos,pos)}catch{}}));
+$('registerPassword').addEventListener('input',()=>{const v=$('registerPassword').value;let s=0;if(v.length>=6)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;$('passwordStrength').style.width=[0,25,50,75,100][s]+'%';$('passwordStrengthText').textContent=['Aún sin evaluar','Débil','Aceptable','Buena','Muy fuerte'][s]});
+registerForm.addEventListener('submit',(e)=>{e.preventDefault();const nombre=$('registerName').value.trim(),email=$('registerEmail').value.trim().toLowerCase(),phone=$('registerPhone').value.trim(),p1=$('registerPassword').value,p2=$('registerPassword2').value;if(nombre.length<2)return feedback('Escribe un nombre válido.','error');if(p1.length<6)return feedback('La contraseña debe tener mínimo 6 caracteres.','error');if(p1!==p2)return feedback('Las contraseñas no coinciden.','error');const list=users();if(list.some(u=>u.email===email))return feedback('Ese correo ya está registrado.','error');list.push({id:uid('usr'),nombre,email,phone,city:'',bio:'',password:p1,role:'user',beePoints:25+(pollenCount>=5?5:0),createdAt:new Date().toISOString()});saveUsers(list);registerForm.reset();$('passwordStrength').style.width='0%';$('passwordStrengthText').textContent='Aún sin evaluar';switchAuth('login');$('loginEmail').value=email;feedback(`✅ Cuenta creada. Recibiste ${pollenCount>=5?30:25} BeePoints de bienvenida.`,'ok')});
+loginForm.addEventListener('submit',(e)=>{e.preventDefault();const email=$('loginEmail').value.trim().toLowerCase(),pass=$('loginPassword').value;const user=users().find(u=>u.email===email&&u.password===pass);if(!user)return feedback('❌ Correo o contraseña incorrectos.','error');currentUser=user;const remember=$('rememberSession').checked;if(remember)write(SESSION_KEY,{id:user.id});else sessionStorage.setItem(SESSION_KEY,JSON.stringify({id:user.id}));openSite()});
+$('forgotBtn').addEventListener('click',()=>{$('forgotBox').classList.remove('hidden');loginForm.classList.remove('active');registerForm.classList.remove('active');feedback('')});$('cancelForgotBtn').addEventListener('click',()=>switchAuth('login'));
+$('resetPasswordBtn').addEventListener('click',()=>{const email=$('forgotEmail').value.trim().toLowerCase(),pass=$('forgotPassword').value;if(pass.length<6)return feedback('La nueva contraseña debe tener mínimo 6 caracteres.','error');const list=users(),i=list.findIndex(u=>u.email===email);if(i<0)return feedback('No existe una cuenta con ese correo.','error');list[i].password=pass;saveUsers(list);$('loginEmail').value=email;switchAuth('login');feedback('✅ Contraseña actualizada. Ya puedes iniciar sesión.','ok')});
 
-function modoOscuro(){
-    document.body.classList.toggle("dark");
-}
+const beePhrases=['¡Bzzz! Me atrapaste 🐝','Las abejas trabajan en equipo 🌼','Recolecta 5 pólenes y gana un bonus 🍯','Tu colmena digital te espera 🏠'];let phrase=0;$('beeMascot').addEventListener('click',()=>{pollenCount=Math.min(5,pollenCount+1);$('pollenCount').textContent=pollenCount;phrase=(phrase+1)%beePhrases.length;$('beeMessage').textContent=pollenCount===5?'🏆 ¡Bonus desbloqueado! Regístrate y recibe +5 BeePoints.':beePhrases[phrase];$('beeMascot').classList.remove('fly');void $('beeMascot').offsetWidth;$('beeMascot').classList.add('fly')});
 
-form.addEventListener("submit", function(event) {
-    event.preventDefault();
+function openSite(){authScreen.style.display='none';siteApp.classList.remove('locked');$('adminNavItem').classList.toggle('hidden',currentUser.role!=='admin');$('adminPanel').classList.toggle('hidden',currentUser.role!=='admin');loadUserState();prefillUserFields();renderAll();toast(`🐝 Bienvenido, ${currentUser.nombre}`);window.scrollTo({top:0})}
+function logout(){localStorage.removeItem(SESSION_KEY);sessionStorage.removeItem(SESSION_KEY);currentUser=null;siteApp.classList.add('locked');authScreen.style.display='grid';loginForm.reset();switchAuth('login');feedback('Sesión cerrada correctamente. 🐝','ok');window.scrollTo({top:0})}$('logoutBtn').addEventListener('click',logout);
+function restoreSession(){let s=read(SESSION_KEY,null);if(!s){try{s=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null')}catch{}}if(s){const u=users().find(x=>x.id===s.id);if(u){currentUser=u;openSite()}}}setTimeout(restoreSession,0);
 
-    const nombre = document.getElementById("nombre").value.trim();
-    const correo = document.getElementById("correo").value.trim();
-    const telefono = document.getElementById("telefono").value.trim();
-    const tratamiento = document.getElementById("tratamiento").value;
-    const consulta = document.getElementById("consulta").value.trim();
+const header=$('header'), nav=$('nav'), menuBtn=$('menuBtn'), arriba=$('arriba');menuBtn.addEventListener('click',()=>nav.classList.toggle('abierto'));document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('abierto')));window.addEventListener('scroll',()=>{header.style.boxShadow=window.scrollY>50?'0 8px 25px rgba(0,0,0,.25)':'none';arriba.style.display=window.scrollY>450?'block':'none'});arriba.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));$('darkModeBtn').addEventListener('click',()=>document.body.classList.toggle('dark'));
 
-    if (!nombre || !correo || !tratamiento || !consulta) {
-        alert("Por favor, completa todos los campos obligatorios.");
-        return;
-    }
+function prefillUserFields(){$('nombre').value=currentUser.nombre;$('correo').value=currentUser.email;$('telefono').value=currentUser.phone||'';$('profileName').value=currentUser.nombre;$('profileEmail').value=currentUser.email;$('profilePhone').value=currentUser.phone||'';$('profileCity').value=currentUser.city||'';$('profileBio').value=currentUser.bio||''}
+$('editProfileBtn').addEventListener('click',()=>{$('perfil').classList.remove('hidden');$('perfil').scrollIntoView({behavior:'smooth'})});$('cancelProfileBtn').addEventListener('click',()=>$('perfil').classList.add('hidden'));
+$('profileForm').addEventListener('submit',(e)=>{e.preventDefault();currentUser.nombre=$('profileName').value.trim();currentUser.phone=$('profilePhone').value.trim();currentUser.city=$('profileCity').value.trim();currentUser.bio=$('profileBio').value.trim();saveCurrentUser();$('perfil').classList.add('hidden');prefillUserFields();renderDashboard();toast('✅ Perfil actualizado')});
 
-    const mensaje =
-`🐝 *Nueva solicitud desde ApiBee*
+function userAppointments(){return read(APPTS_KEY,[]).filter(a=>a.userId===currentUser.id)}function allAppointments(){return read(APPTS_KEY,[])}
+$('appointmentDate').min=todayISO();$('appointmentForm').addEventListener('submit',(e)=>{e.preventDefault();const treatment=$('appointmentTreatment').value,date=$('appointmentDate').value,time=$('appointmentTime').value,notes=$('appointmentNotes').value.trim();if(!date||date<todayISO())return toast('❌ Selecciona una fecha válida');const all=allAppointments();if(all.some(a=>a.date===date&&a.time===time&&a.status!=='Cancelada'))return toast('⏰ Ese horario ya está ocupado');all.push({id:uid('apt'),userId:currentUser.id,userName:currentUser.nombre,email:currentUser.email,treatment,date,time,notes,status:'Confirmada',createdAt:new Date().toISOString()});write(APPTS_KEY,all);$('appointmentForm').reset();$('appointmentDate').min=todayISO();addPoints(30,'cita confirmada');renderAppointments();renderAdmin()});
+function renderAppointments(){if(!currentUser)return;const list=userAppointments().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));$('appointmentCountBadge').textContent=list.length;$('appointmentsList').innerHTML=list.length?list.map(a=>`<article class="list-item"><div class="list-item-top"><div><h4>${escapeHTML(a.treatment)}</h4><p>📅 ${escapeHTML(a.date)} · ${escapeHTML(a.time)}</p><p>Estado: <strong>${escapeHTML(a.status)}</strong></p>${a.notes?`<p>📝 ${escapeHTML(a.notes)}</p>`:''}</div><span class="status-badge">${a.status==='Confirmada'?'Activa':escapeHTML(a.status)}</span></div>${a.status==='Confirmada'?`<div class="item-actions"><button class="small-btn danger cancel-apt" data-id="${a.id}" type="button">Cancelar cita</button></div>`:''}</article>`).join(''):'<p class="empty-state">Aún no tienes citas registradas.</p>';document.querySelectorAll('.cancel-apt').forEach(b=>b.addEventListener('click',()=>{const all=allAppointments(),i=all.findIndex(a=>a.id===b.dataset.id);if(i>=0){all[i].status='Cancelada';write(APPTS_KEY,all);renderAppointments();renderDashboard();renderAdmin();toast('Cita cancelada')}}));renderDashboard()}
 
-👤 *Nombre:* ${nombre}
-📧 *Correo:* ${correo}
-📱 *Teléfono:* ${telefono || "No indicado"}
-🍯 *Tratamiento:* ${tratamiento}
+const PRODUCTS=[{id:'miel',name:'Miel natural',price:8.50,img:'miel.jpg',desc:'Frasco de miel natural de la colmena.'},{id:'propoleo',name:'Propóleo',price:12.00,img:'propoleo.jpg',desc:'Presentación demostrativa de propóleo.'},{id:'jalea',name:'Jalea Real',price:15.50,img:'jalea.jpg',desc:'Producto natural de la colmena.'},{id:'polen',name:'Polen de abeja',price:10.00,img:'polen.jpg',desc:'Polen de abeja para catálogo académico.'}];
+function renderProducts(){$('productGrid').innerHTML=PRODUCTS.map(p=>`<article class="product-card"><img src="./${p.img}" alt="${escapeHTML(p.name)}"><div class="product-info"><h3>${escapeHTML(p.name)}</h3><p>${escapeHTML(p.desc)}</p><div class="product-bottom"><span class="price">${money(p.price)}</span><button class="add-cart-btn" data-id="${p.id}" type="button">Agregar 🛒</button></div></div></article>`).join('');document.querySelectorAll('.add-cart-btn').forEach(b=>b.addEventListener('click',()=>addToCart(b.dataset.id)))}
+function cartKey(){return `apibeeCartV3:${currentUser.id}`}function loadCart(){cart=read(cartKey(),[])}function saveCart(){write(cartKey(),cart);renderCart()}
+function addToCart(id){const p=PRODUCTS.find(x=>x.id===id);if(!p)return;const item=cart.find(x=>x.id===id);if(item)item.qty++;else cart.push({...p,qty:1});saveCart();toast(`🛒 ${p.name} agregado`)}
+function renderCart(){if(!currentUser)return;const count=cart.reduce((s,x)=>s+x.qty,0),total=cart.reduce((s,x)=>s+x.price*x.qty,0);$('cartCount').textContent=count;$('cartTotal').textContent=money(total);$('cartItems').innerHTML=cart.length?cart.map(i=>`<div class="cart-item"><div><h4>${escapeHTML(i.name)}</h4><p>${money(i.price)} c/u</p><button class="small-btn danger cart-remove" data-id="${i.id}" type="button">Quitar</button></div><div class="qty-controls"><button class="cart-minus" data-id="${i.id}" type="button">−</button><strong>${i.qty}</strong><button class="cart-plus" data-id="${i.id}" type="button">+</button></div></div>`).join(''):'<p class="empty-state">Tu carrito está vacío.</p>';document.querySelectorAll('.cart-plus').forEach(b=>b.addEventListener('click',()=>changeQty(b.dataset.id,1)));document.querySelectorAll('.cart-minus').forEach(b=>b.addEventListener('click',()=>changeQty(b.dataset.id,-1)));document.querySelectorAll('.cart-remove').forEach(b=>b.addEventListener('click',()=>{cart=cart.filter(x=>x.id!==b.dataset.id);saveCart()}))}
+function changeQty(id,d){const i=cart.find(x=>x.id===id);if(!i)return;i.qty+=d;if(i.qty<=0)cart=cart.filter(x=>x.id!==id);saveCart()}
+function openCart(){$('cartDrawer').classList.add('open');$('drawerOverlay').classList.add('open')}function closeCart(){$('cartDrawer').classList.remove('open');$('drawerOverlay').classList.remove('open')}$('cartNavBtn').addEventListener('click',openCart);$('closeCartBtn').addEventListener('click',closeCart);$('drawerOverlay').addEventListener('click',closeCart);$('clearCartBtn').addEventListener('click',()=>{cart=[];saveCart()});
+$('checkoutBtn').addEventListener('click',()=>{if(!cart.length)return toast('Tu carrito está vacío');const total=cart.reduce((s,x)=>s+x.price*x.qty,0);const order={id:uid('ord'),userId:currentUser.id,userName:currentUser.nombre,email:currentUser.email,items:cart,total,date:new Date().toISOString()};const orders=read(ORDERS_KEY,[]);orders.push(order);write(ORDERS_KEY,orders);const lines=cart.map(i=>`• ${i.name} x${i.qty} = ${money(i.price*i.qty)}`).join('\n');const text=`🐝 *Nuevo pedido ApiBee*\n\n👤 ${currentUser.nombre}\n📧 ${currentUser.email}\n\n${lines}\n\n💵 *Total: ${money(total)}*`;addPoints(20,'pedido generado');cart=[];saveCart();renderDashboard();renderAdmin();closeCart();window.open(`https://wa.me/593963913139?text=${encodeURIComponent(text)}`,'_blank')});
 
-📝 *Consulta:*
-${consulta}`;
+function gameKey(){return `apibeeGameV3:${currentUser.id}`}function loadGame(){game=read(gameKey(),game)}function saveGame(){write(gameKey(),game)}
+function production(){return game.abejas*game.flores*game.nivel}function updateGame(){if(!currentUser)return;$('miel').textContent=Math.floor(game.miel);$('dinero').textContent=Math.floor(game.dinero);$('abejas').textContent=game.abejas;$('flores').textContent=game.flores;$('colmenas').textContent=game.colmenas;$('precioAbeja').textContent=game.precioAbeja;$('precioFlor').textContent=game.precioFlor;$('precioColmena').textContent=game.precioColmena;$('precioUpgrade').textContent=game.precioUpgrade;$('progreso').style.width=game.progreso+'%';const achieved=[];if(game.miel>=100)achieved.push('🥉 Apicultor Novato');if(game.miel>=500)achieved.push('🥈 Productor Profesional');if(game.miel>=1000)achieved.push('🥇 Maestro de la Colmena');$('listaLogros').innerHTML=achieved.length?achieved.map(x=>`<p>${x}</p>`).join(''):'<p>❌ Aún no has desbloqueado logros.</p>';const mission=Math.min(100,Math.floor(game.miel));$('missionProgressText').textContent=`${mission}/100`;$('claimMissionBtn').disabled=mission<100||game.missionClaimed;$('claimMissionBtn').textContent=game.missionClaimed?'✅ Recompensa reclamada':'Reclamar +50 🍯';saveGame();renderDashboard()}
+$('produceHoneyBtn').addEventListener('click',()=>{game.miel+=production();game.dinero+=Math.floor(production()/2);game.progreso=(game.progreso+10)%110;if(game.progreso>100)game.progreso=0;updateGame()});
+function buy(kind){const map={bee:['precioAbeja','abejas',20,'🐝 Nueva abeja'],flower:['precioFlor','flores',15,'🌼 Nueva flor'],hive:['precioColmena','colmenas',80,'🏠 Nueva colmena'],upgrade:['precioUpgrade','nivel',200,'⚡ Producción mejorada']};const [priceKey,countKey,raise,msg]=map[kind];if(game.dinero<game[priceKey])return toast('❌ No tienes suficientes monedas');game.dinero-=game[priceKey];game[countKey]++;game[priceKey]+=raise;updateGame();toast(msg)}$('buyBeeBtn').addEventListener('click',()=>buy('bee'));$('buyFlowerBtn').addEventListener('click',()=>buy('flower'));$('buyHiveBtn').addEventListener('click',()=>buy('hive'));$('upgradeBtn').addEventListener('click',()=>buy('upgrade'));
+$('claimMissionBtn').addEventListener('click',()=>{if(game.miel>=100&&!game.missionClaimed){game.missionClaimed=true;addPoints(50,'misión Honey Factory');updateGame()}});
+setInterval(()=>{if(currentUser&&siteApp&&!siteApp.classList.contains('locked')){game.miel+=game.colmenas*game.nivel;game.dinero+=game.colmenas;updateGame()}},3000);
 
-    const numero = "593963913139";
-    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+function rank(points){if(points>=500)return['Abeja Reina',100,500];if(points>=250)return['Guardián de la Colmena',Math.min(100,(points-250)/2.5),500];if(points>=100)return['Abeja Obrera',Math.min(100,(points-100)/1.5),250];return['Abeja Exploradora',Math.min(100,points),100]}
+function renderDashboard(){if(!currentUser)return;$('dashName').textContent=currentUser.nombre;$('dashEmail').textContent=currentUser.email;$('heroWelcome').textContent=`Hola ${currentUser.nombre}. Gestiona tus citas, productos, BeePoints y tu Honey Factory.`;$('beePointsValue').textContent=currentUser.beePoints||0;const future=userAppointments().filter(a=>a.status==='Confirmada'&&a.date>=todayISO()).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))[0];$('nextAppointmentValue').textContent=future?`${future.date} ${future.time}`:'Sin cita';$('ordersValue').textContent=read(ORDERS_KEY,[]).filter(o=>o.userId===currentUser.id).length;const lvl=Math.max(1,Math.floor(game.miel/250)+1);$('honeyLevelValue').textContent=`Nivel ${lvl}`;const [name,progress,next]=rank(currentUser.beePoints||0);$('beeRankLabel').textContent=name;$('beePointsProgress').style.width=Math.min(100,progress)+'%';$('beePointsHint').textContent=name==='Abeja Reina'?'🏆 Alcanzaste el rango máximo.':`Siguiente rango al alcanzar ${next} BeePoints.`}
 
-    window.open(url, "_blank");
-});
+function allOrders(){return read(ORDERS_KEY,[])}function renderAdmin(){if(!currentUser||currentUser.role!=='admin')return;const us=users(),ap=allAppointments(),ords=allOrders();$('adminUsersCount').textContent=us.length;$('adminAppointmentsCount').textContent=ap.length;$('adminOrdersCount').textContent=ords.length;$('adminRevenue').textContent=money(ords.reduce((s,o)=>s+o.total,0));$('adminUsersList').innerHTML=us.map(u=>`<article class="list-item"><div class="list-item-top"><div><h4>${escapeHTML(u.nombre)} ${u.role==='admin'?'<span class="role-badge">ADMIN</span>':''}</h4><p>${escapeHTML(u.email)}</p><p>🍯 ${u.beePoints||0} BeePoints</p></div></div></article>`).join('');$('adminAppointmentsList').innerHTML=ap.length?ap.map(a=>`<article class="list-item"><h4>${escapeHTML(a.userName)} · ${escapeHTML(a.treatment)}</h4><p>${escapeHTML(a.date)} ${escapeHTML(a.time)} · ${escapeHTML(a.status)}</p>${a.status==='Confirmada'?`<div class="item-actions"><button class="small-btn ok admin-done" data-id="${a.id}" type="button">Marcar atendida</button></div>`:''}</article>`).join(''):'<p class="empty-state">Sin citas.</p>';$('adminOrdersList').innerHTML=ords.length?ords.map(o=>`<article class="list-item"><h4>${escapeHTML(o.userName)} · ${money(o.total)}</h4><p>${new Date(o.date).toLocaleString('es-EC')} · ${o.items.reduce((s,i)=>s+i.qty,0)} productos</p></article>`).join(''):'<p class="empty-state">Sin pedidos.</p>';document.querySelectorAll('.admin-done').forEach(b=>b.addEventListener('click',()=>{const all=allAppointments(),i=all.findIndex(a=>a.id===b.dataset.id);if(i>=0){all[i].status='Atendida';write(APPTS_KEY,all);renderAdmin();toast('✅ Cita marcada como atendida')}}))}
 
-let mielJuego = 0;
-let dineroJuego = 50;
-let abejasJuego = 1;
-let floresJuego = 3;
-let colmenasJuego = 1;
-let nivelProduccion = 1;
-let precioAbeja = 40;
-let precioFlor = 30;
-let precioColmena = 120;
-let precioUpgrade = 200;
-let progreso = 0;
-
-function actualizarJuego(){
-    document.getElementById("miel").textContent = mielJuego;
-    document.getElementById("dinero").textContent = dineroJuego;
-    document.getElementById("abejas").textContent = abejasJuego;
-    document.getElementById("flores").textContent = floresJuego;
-    document.getElementById("colmenas").textContent = colmenasJuego;
-    document.getElementById("precioAbeja").textContent = precioAbeja;
-    document.getElementById("precioFlor").textContent = precioFlor;
-    document.getElementById("precioColmena").textContent = precioColmena;
-    document.getElementById("precioUpgrade").textContent = precioUpgrade;
-    comprobarLogros();
-}
-
-function producirMiel(){
-    const produccion = abejasJuego * floresJuego * nivelProduccion;
-    mielJuego += produccion;
-    dineroJuego += Math.floor(produccion / 2);
-    progreso = progreso >= 100 ? 0 : progreso + 10;
-    document.getElementById("progreso").style.width = progreso + "%";
-    actualizarJuego();
-}
-
-function comprarAbeja(){
-    if(dineroJuego < precioAbeja) return mensaje("❌ No tienes suficientes monedas");
-    dineroJuego -= precioAbeja;
-    abejasJuego++;
-    precioAbeja += 20;
-    actualizarJuego();
-    mensaje("🐝 Nueva abeja comprada");
-}
-
-function comprarFlor(){
-    if(dineroJuego < precioFlor) return mensaje("❌ Dinero insuficiente");
-    dineroJuego -= precioFlor;
-    floresJuego++;
-    precioFlor += 15;
-    actualizarJuego();
-    mensaje("🌼 Compraste una flor");
-}
-
-function comprarColmena(){
-    if(dineroJuego < precioColmena) return mensaje("❌ Necesitas más monedas");
-    dineroJuego -= precioColmena;
-    colmenasJuego++;
-    precioColmena += 80;
-    actualizarJuego();
-    mensaje("🏠 Nueva colmena instalada");
-}
-
-function mejorarProduccion(){
-    if(dineroJuego < precioUpgrade) return mensaje("❌ No puedes mejorar todavía");
-    dineroJuego -= precioUpgrade;
-    nivelProduccion++;
-    precioUpgrade += 200;
-    actualizarJuego();
-    mensaje("⚡ Producción mejorada");
-}
-
-function comprobarLogros(){
-    const logros = [];
-    if(mielJuego >= 100) logros.push("🥉 Apicultor Novato");
-    if(mielJuego >= 500) logros.push("🥈 Productor Profesional");
-    if(mielJuego >= 1000) logros.push("🥇 Maestro de la Colmena");
-    document.getElementById("listaLogros").innerHTML =
-        logros.length ? logros.map(x => `<p>${x}</p>`).join("") : "<p>❌ Aún no has desbloqueado logros.</p>";
-}
-
-function mensaje(texto){
-    const aviso = document.createElement("div");
-    aviso.textContent = texto;
-    Object.assign(aviso.style,{
-        position:"fixed",top:"90px",right:"20px",background:"#111827",
-        color:"white",padding:"14px 22px",borderRadius:"12px",
-        boxShadow:"0 10px 25px rgba(0,0,0,.3)",zIndex:"9999"
-    });
-    document.body.appendChild(aviso);
-    setTimeout(() => aviso.remove(), 2000);
-}
-
-setInterval(() => {
-    mielJuego += colmenasJuego * nivelProduccion;
-    dineroJuego += colmenasJuego;
-    actualizarJuego();
-}, 3000);
-
-actualizarJuego();
-
-// ===== ACCESO / REGISTRO APIBEE =====
-const authScreen = document.getElementById("authScreen");
-const siteApp = document.getElementById("siteApp");
-const loginTab = document.getElementById("loginTab");
-const registerTab = document.getElementById("registerTab");
-const loginForm = document.getElementById("loginForm");
-const registerForm = document.getElementById("registerForm");
-const authFeedback = document.getElementById("authFeedback");
-const beeMascot = document.getElementById("beeMascot");
-const beeMessage = document.getElementById("beeMessage");
-const registerPassword = document.getElementById("registerPassword");
-const registerPassword2 = document.getElementById("registerPassword2");
-const passwordStrength = document.getElementById("passwordStrength");
-const passwordStrengthText = document.getElementById("passwordStrengthText");
-const logoutBtn = document.getElementById("logoutBtn");
-
-const USERS_KEY = "apibeeUsers";
-const SESSION_KEY = "apibeeSession";
-
-function obtenerUsuarios(){
-    try {
-        return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
-    } catch {
-        return [];
-    }
-}
-
-function guardarUsuarios(usuarios){
-    localStorage.setItem(USERS_KEY, JSON.stringify(usuarios));
-}
-
-function mostrarFeedback(texto, tipo = ""){
-    authFeedback.textContent = texto;
-    authFeedback.className = `auth-feedback ${tipo}`.trim();
-}
-
-function cambiarAuth(modo, conservarMensaje = false){
-    const login = modo === "login";
-    loginTab.classList.toggle("active", login);
-    registerTab.classList.toggle("active", !login);
-    loginForm.classList.toggle("active", login);
-    registerForm.classList.toggle("active", !login);
-    if(!conservarMensaje) mostrarFeedback("");
-}
-
-function abrirSitio(nombre){
-    authScreen.style.display = "none";
-    siteApp.classList.remove("locked");
-    if(nombre) mensaje(`🐝 Bienvenido a ApiBee, ${nombre}`);
-    window.scrollTo({top:0, behavior:"smooth"});
-}
-
-function cerrarSitio(){
-    localStorage.removeItem(SESSION_KEY);
-    siteApp.classList.add("locked");
-    authScreen.style.display = "grid";
-    loginForm.reset();
-    cambiarAuth("login");
-    mostrarFeedback("Sesión cerrada correctamente. 🐝", "ok");
-    window.scrollTo({top:0, behavior:"smooth"});
-}
-
-loginTab?.addEventListener("click", () => cambiarAuth("login"));
-registerTab?.addEventListener("click", () => cambiarAuth("register"));
-logoutBtn?.addEventListener("click", cerrarSitio);
-
-document.querySelectorAll(".show-pass").forEach(btn => {
-    btn.addEventListener("click", () => {
-        const input = document.getElementById(btn.dataset.target);
-        if(!input) return;
-        input.type = input.type === "password" ? "text" : "password";
-        btn.textContent = input.type === "password" ? "👁️" : "🙈";
-    });
-});
-
-registerPassword?.addEventListener("input", () => {
-    const value = registerPassword.value;
-    let score = 0;
-    if(value.length >= 6) score++;
-    if(/[A-Z]/.test(value)) score++;
-    if(/[0-9]/.test(value)) score++;
-    if(/[^A-Za-z0-9]/.test(value)) score++;
-    const widths = [0,25,50,75,100];
-    const texts = ["Aún sin evaluar","Débil","Aceptable","Buena","Muy fuerte"];
-    passwordStrength.style.width = widths[score] + "%";
-    passwordStrengthText.textContent = texts[score];
-});
-
-registerForm?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const nombre = document.getElementById("registerName").value.trim();
-    const email = document.getElementById("registerEmail").value.trim().toLowerCase();
-    const password = registerPassword.value;
-    const password2 = registerPassword2.value;
-
-    if(nombre.length < 2){
-        mostrarFeedback("Escribe un nombre válido.", "error");
-        return;
-    }
-    if(password.length < 6){
-        mostrarFeedback("La contraseña debe tener al menos 6 caracteres.", "error");
-        return;
-    }
-    if(password !== password2){
-        mostrarFeedback("Las contraseñas no coinciden.", "error");
-        return;
-    }
-
-    const usuarios = obtenerUsuarios();
-    if(usuarios.some(u => u.email === email)){
-        mostrarFeedback("Ese correo ya está registrado. Inicia sesión.", "error");
-        return;
-    }
-
-    usuarios.push({nombre, email, password});
-    guardarUsuarios(usuarios);
-    registerForm.reset();
-    passwordStrength.style.width = "0%";
-    passwordStrengthText.textContent = "Aún sin evaluar";
-    document.getElementById("loginEmail").value = email;
-    cambiarAuth("login", true);
-    mostrarFeedback("✅ Cuenta creada correctamente. Ahora inicia sesión con tu contraseña.", "ok");
-});
-
-loginForm?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const email = document.getElementById("loginEmail").value.trim().toLowerCase();
-    const password = document.getElementById("loginPassword").value;
-    const usuarios = obtenerUsuarios();
-    const usuario = usuarios.find(u => u.email === email && u.password === password);
-
-    if(!usuario){
-        mostrarFeedback("❌ Correo o contraseña incorrectos. Si no tienes cuenta, regístrate primero.", "error");
-        return;
-    }
-
-    localStorage.setItem(SESSION_KEY, JSON.stringify({email: usuario.email, nombre: usuario.nombre}));
-    mostrarFeedback(`🍯 ¡Bienvenido, ${usuario.nombre}!`, "ok");
-    setTimeout(() => abrirSitio(usuario.nombre), 350);
-});
-
-const beePhrases = [
-    "Las abejas trabajan en equipo. ¡Crea tu cuenta y entra a la colmena! 🐝",
-    "Bzzz... tu cuenta queda guardada en este navegador 🍯",
-    "¡Haz clic! Cada nueva cuenta es una abeja más en nuestra colmena 🌼",
-    "Regístrate, inicia sesión y explora ApiBee 🐝"
-];
-let beePhraseIndex = 0;
-beeMascot?.addEventListener("click", () => {
-    beePhraseIndex = (beePhraseIndex + 1) % beePhrases.length;
-    beeMessage.textContent = beePhrases[beePhraseIndex];
-    beeMascot.classList.remove("fly");
-    void beeMascot.offsetWidth;
-    beeMascot.classList.add("fly");
-});
-
-// Si ya existe una sesión válida, entra directamente a la página.
-try {
-    const sesion = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-    const usuarios = obtenerUsuarios();
-    if(sesion && usuarios.some(u => u.email === sesion.email)){
-        abrirSitio(sesion.nombre);
-    }
-} catch {}
+$('contactForm').addEventListener('submit',(e)=>{e.preventDefault();const text=`🐝 *Consulta ApiBee*\n👤 ${$('nombre').value.trim()}\n📧 ${$('correo').value.trim()}\n📱 ${$('telefono').value.trim()||'No indicado'}\n🍯 ${$('tratamiento').value}\n📝 ${$('consulta').value.trim()}`;window.open(`https://wa.me/593963913139?text=${encodeURIComponent(text)}`,'_blank')});
+function toast(text){const d=document.createElement('div');d.textContent=text;Object.assign(d.style,{position:'fixed',top:'88px',right:'18px',background:'#111827',color:'white',padding:'13px 18px',borderRadius:'12px',boxShadow:'0 10px 25px rgba(0,0,0,.3)',zIndex:'9999',maxWidth:'320px'});document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+function loadUserState(){loadCart();loadGame()}function renderAll(){renderProducts();renderCart();renderAppointments();updateGame();renderDashboard();renderAdmin()}
