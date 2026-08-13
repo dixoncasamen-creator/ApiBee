@@ -1,31 +1,17 @@
-[README.md](https://github.com/user-attachments/files/31035613/README.md)
-# ApiBee COMPLETO
+[README.md](https://github.com/user-attachments/files/31035992/README.md)
+# ApiBee — versión funcional corregida
 
-Versión ampliada de ApiBee con:
-- Registro e inicio de sesión funcional en localStorage.
-- Recuperación de contraseña para demostración.
-- Perfil editable.
-- Dashboard del usuario.
-- Sistema de citas.
-- Tienda y carrito con pedido por WhatsApp.
-- BeePoints y rangos.
-- Honey Factory con progreso guardado, misión y logros.
-- Panel de administrador.
-- Modo oscuro y diseño responsive.
+Cambios de esta revisión:
 
-## Administrador de demostración
-Correo: admin@apibee.ec
-Contraseña: ApiBee2026!
+- Tienda con productos visibles incluso antes de que JavaScript reconstruya el catálogo.
+- Botones del carrito conectados de forma segura.
+- Las citas ya no muestran “+30” en el botón.
+- Los 30 BeePoints se acreditan únicamente cuando el administrador marca una cita como atendida.
+- La cuenta admin se repara automáticamente si existía con datos incorrectos.
+- El progreso de Honey Factory carga con valores por defecto aunque existan datos antiguos incompletos.
 
-## Importante
-Este proyecto es una demostración académica estática para GitHub Pages. Los usuarios, contraseñas y datos se guardan en el navegador mediante localStorage; no reemplaza un backend real ni un sistema de autenticación de producción.
+Administrador de demostración:
+- Correo: admin@apibee.ec
+- Contraseña: ApiBee2026!
 
-## Archivos de imágenes esperados en la misma carpeta
-hero.jpg
-miel.jpg
-propoleo.jpg
-jalea.jpg
-polen.jpg
-colmena.png
-
-Si tu repositorio ya contiene estas imágenes, no necesitas reemplazarlas.
+Para GitHub Pages, reemplaza index.html, estilos.css y script.js y conserva las imágenes originales.
