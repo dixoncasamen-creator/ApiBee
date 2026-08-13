@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -63,6 +64,12 @@
                 <button class="show-pass" data-target="registerPassword" type="button" aria-label="Mostrar contraseña">👁️</button>
             </div>
 
+            <label for="registerPassword2">Confirmar contraseña</label>
+            <div class="password-wrap">
+                <input id="registerPassword2" type="password" minlength="6" placeholder="Repite tu contraseña" required>
+                <button class="show-pass" data-target="registerPassword2" type="button" aria-label="Mostrar contraseña">👁️</button>
+            </div>
+
             <div class="honey-strength" aria-live="polite">
                 <span>Fuerza de contraseña</span>
                 <div class="honey-track"><div id="passwordStrength"></div></div>
@@ -89,6 +96,7 @@
             <li><a href="#tratamientos">Tratamientos</a></li>
             <li><a href="#contacto">Contacto</a></li>
             <li><a href="#factory">Honey Factory</a></li>
+            <li><button id="logoutBtn" class="logout-btn" type="button">Cerrar sesión</button></li>
         </ul>
     </nav>
 </header>
