@@ -177,7 +177,8 @@
             <label for="appointmentDate">Fecha</label><input id="appointmentDate" type="date" required>
             <label for="appointmentTime">Hora</label><select id="appointmentTime" required><option value="">Selecciona una hora</option><option>09:00</option><option>10:30</option><option>12:00</option><option>14:00</option><option>15:30</option><option>17:00</option></select>
             <label for="appointmentNotes">Motivo / observación</label><textarea id="appointmentNotes" placeholder="Escribe una observación breve"></textarea>
-            <button type="submit">Confirmar cita +30 🍯</button>
+            <button type="submit">Confirmar cita</button>
+            <p class="form-help">🐝 Cuando la cita sea marcada como <strong>atendida</strong>, recibirás 30 BeePoints.</p>
           </form>
           <div class="appointments-box">
             <div class="box-heading"><h3>Próximas citas</h3><span id="appointmentCountBadge" class="status-badge">0</span></div>
@@ -198,7 +199,12 @@
 
       <section id="tienda" class="store-section">
         <div class="titulo"><span class="mini-titulo">ApiBee Market</span><h2>Tienda de productos</h2><p>Agrega productos al carrito y genera tu pedido por WhatsApp.</p></div>
-        <div id="productGrid" class="product-grid"></div>
+        <div id="productGrid" class="product-grid">
+          <article class="product-card" data-product="miel"><img src="./miel.jpg" alt="Miel natural"><div class="product-info"><h3>Miel natural</h3><p>Frasco de miel natural de la colmena.</p><div class="product-bottom"><span class="price">$8.50</span><button class="add-cart-btn" data-id="miel" type="button">Agregar 🛒</button></div></div></article>
+          <article class="product-card" data-product="propoleo"><img src="./propoleo.jpg" alt="Propóleo"><div class="product-info"><h3>Propóleo</h3><p>Presentación demostrativa de propóleo.</p><div class="product-bottom"><span class="price">$12.00</span><button class="add-cart-btn" data-id="propoleo" type="button">Agregar 🛒</button></div></div></article>
+          <article class="product-card" data-product="jalea"><img src="./jalea.jpg" alt="Jalea Real"><div class="product-info"><h3>Jalea Real</h3><p>Producto natural de la colmena.</p><div class="product-bottom"><span class="price">$15.50</span><button class="add-cart-btn" data-id="jalea" type="button">Agregar 🛒</button></div></div></article>
+          <article class="product-card" data-product="polen"><img src="./polen.jpg" alt="Polen de abeja"><div class="product-info"><h3>Polen de abeja</h3><p>Polen de abeja para el catálogo de ApiBee.</p><div class="product-bottom"><span class="price">$10.00</span><button class="add-cart-btn" data-id="polen" type="button">Agregar 🛒</button></div></div></article>
+        </div>
       </section>
 
       <section id="contacto">
