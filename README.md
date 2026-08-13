@@ -1,21 +1,31 @@
-[README.md](https://github.com/user-attachments/files/31034907/README.md)
+[README.md](https://github.com/user-attachments/files/31035613/README.md)
+# ApiBee COMPLETO
 
-# ApiBee
+Versión ampliada de ApiBee con:
+- Registro e inicio de sesión funcional en localStorage.
+- Recuperación de contraseña para demostración.
+- Perfil editable.
+- Dashboard del usuario.
+- Sistema de citas.
+- Tienda y carrito con pedido por WhatsApp.
+- BeePoints y rangos.
+- Honey Factory con progreso guardado, misión y logros.
+- Panel de administrador.
+- Modo oscuro y diseño responsive.
 
-Proyecto listo para GitHub Pages.
+## Administrador de demostración
+Correo: admin@apibee.ec
+Contraseña: ApiBee2026!
 
-## WhatsApp configurado
+## Importante
+Este proyecto es una demostración académica estática para GitHub Pages. Los usuarios, contraseñas y datos se guardan en el navegador mediante localStorage; no reemplaza un backend real ni un sistema de autenticación de producción.
 
-Todos los botones y el formulario envían al número:
+## Archivos de imágenes esperados en la misma carpeta
+hero.jpg
+miel.jpg
+propoleo.jpg
+jalea.jpg
+polen.jpg
+colmena.png
 
-- 0963913139
-- Formato internacional utilizado: 593963913139
-
-## Subida
-
-Sube todos los archivos directamente a la raíz del repositorio.
-
-
-## Nueva pantalla de acceso
-
-ApiBee ahora inicia con registro e inicio de sesión local para demostración académica. La cuenta se guarda en el navegador mediante localStorage. También incluye una abeja interactiva, mensajes temáticos y medidor de fuerza de contraseña.
+Si tu repositorio ya contiene estas imágenes, no necesitas reemplazarlas.
